@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.db.session import SessionLocal
 from app.db.models import Transaction
-from app.schemas.transaction import TransactionCreate
+from app.schemas.transaction import TransactionCreate, TransactionResponse
 from app.services.processor import process_transaction
 
 router = APIRouter(prefix="/v1")
