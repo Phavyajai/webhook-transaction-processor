@@ -6,6 +6,7 @@ from app.db.session import SessionLocal
 from app.db.models import Transaction
 from app.schemas.transaction import TransactionCreate, TransactionResponse
 from app.services.processor import process_transaction
+from typing import List
 
 router = APIRouter(prefix="/v1")
 
@@ -48,7 +49,7 @@ def receive_webhook(
 
 @router.get(
     "/transactions/{transaction_id}",
-    response_model=TransactionResponse
+    response_model=List[TransactionResponse]
 )
 def get_transaction(transaction_id: str, db: Session = Depends(get_db)):
     txn = db.query(Transaction).filter(
@@ -58,4 +59,4 @@ def get_transaction(transaction_id: str, db: Session = Depends(get_db)):
     if not txn:
         raise HTTPException(status_code=404, detail="Transaction not found")
 
-    return txn
+    return [txn]
