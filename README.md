@@ -173,8 +173,3 @@ uvicorn app.main:app --reload
 
 Visit `http://localhost:8000/docs` for local testing.
 
----
-
-## 📧 Support
-
-For issues or questions, please reach out to the development team.
