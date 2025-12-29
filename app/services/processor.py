@@ -19,7 +19,7 @@ def process_transaction(payload: TransactionCreate):
             destination_account=payload.destination_account,
             amount=payload.amount,
             currency=payload.currency,
-            status="processed"
+            status="processing"
         )
 
         db.add(txn)
