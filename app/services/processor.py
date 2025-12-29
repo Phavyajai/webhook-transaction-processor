@@ -9,11 +9,9 @@ def process_transaction(payload):
             Transaction.transaction_id == payload.transaction_id
         ).first()
 
-        # If already processed → idempotency
         if txn and txn.status == "PROCESSED":
             return
 
-        # If not exists → create as PROCESSING
         if not txn:
             txn = Transaction(
                 transaction_id=payload.transaction_id,
@@ -26,10 +24,8 @@ def process_transaction(payload):
             db.add(txn)
             db.commit()
 
-        # ⏱️ SIMULATED PROCESSING TIME
         time.sleep(30)
 
-        # ✅ Final state
         txn.status = "PROCESSED"
         db.commit()
 
