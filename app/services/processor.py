@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timezone
 from app.db.session import SessionLocal
 from app.db.models import Transaction
 
@@ -19,14 +20,18 @@ def process_transaction(payload):
                 destination_account=payload.destination_account,
                 amount=payload.amount,
                 currency=payload.currency,
-                status="PROCESSING"
+                status="PROCESSING",
+                processed_at=None   
             )
             db.add(txn)
             db.commit()
+            db.refresh(txn)
 
         time.sleep(30)
 
         txn.status = "PROCESSED"
+        txn.processed_at = datetime.now(timezone.utc)
+
         db.commit()
 
     finally:
