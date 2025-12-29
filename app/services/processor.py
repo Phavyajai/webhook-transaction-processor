@@ -1,20 +1,29 @@
-import time
-from datetime import datetime
 from app.db.session import SessionLocal
 from app.db.models import Transaction
+from app.schemas.transaction import TransactionCreate
 
-def process_transaction(transaction_id: str):
-    time.sleep(30)  # simulate delay
-
+def process_transaction(payload: TransactionCreate):
     db = SessionLocal()
     try:
-        txn = db.query(Transaction).filter(
-            Transaction.transaction_id == transaction_id
+        # Idempotency check
+        existing = db.query(Transaction).filter(
+            Transaction.transaction_id == payload.transaction_id
         ).first()
 
-        if txn:
-            txn.status = "PROCESSED"
-            txn.processed_at = datetime.utcnow()
-            db.commit()
+        if existing:
+            return
+
+        txn = Transaction(
+            transaction_id=payload.transaction_id,
+            source_account=payload.source_account,
+            destination_account=payload.destination_account,
+            amount=payload.amount,
+            currency=payload.currency,
+            status="processed"
+        )
+
+        db.add(txn)
+        db.commit()
+
     finally:
         db.close()
