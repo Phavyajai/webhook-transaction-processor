@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+
 class TransactionBase(BaseModel):
     transaction_id: str
     source_account: str
@@ -9,13 +10,18 @@ class TransactionBase(BaseModel):
     amount: float
     currency: str
 
+
 class TransactionCreate(TransactionBase):
+    """
+    Used for incoming webhook payloads
+    """
     pass
+
 
 class TransactionResponse(TransactionBase):
     status: str
     created_at: datetime
-    processed_at: Optional[datetime]
+    processed_at: Optional[datetime] = None
 
     class Config:
         orm_mode = True

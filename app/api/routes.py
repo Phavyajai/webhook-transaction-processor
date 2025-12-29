@@ -31,11 +31,26 @@ def receive_webhook(
     response_model=List[TransactionResponse]
 )
 def get_transaction(transaction_id: str, db: Session = Depends(get_db)):
-    txn = db.query(Transaction).filter(
-        Transaction.transaction_id == transaction_id
-    ).first()
+    txn = (
+    db.query(Transaction)
+        .filter(Transaction.transaction_id == transaction_id)
+        .limit(1)
+        .first()
+    )
+
 
     if not txn:
         raise HTTPException(status_code=404, detail="Transaction not found")
 
-    return [txn]
+    return [
+        {
+            "transaction_id": txn.transaction_id,
+            "source_account": txn.source_account,
+            "destination_account": txn.destination_account,
+            "amount": txn.amount,
+            "currency": txn.currency,
+            "status": txn.status,
+            "created_at": txn.created_at,
+            "processed_at": txn.processed_at,
+        }
+    ]
